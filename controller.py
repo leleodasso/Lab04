@@ -8,9 +8,35 @@ class SpellChecker:
         self._multiDic = md.MultiDictionary()
         self._view = view
 
+    def handleSpellChecker(self, e):
+        if self._view._txtIn.value is None:
+            self._view._txtOut.controls.append(ft.Text(value="Non hai inserito alcuna frase", color="red"))
+            self._view.page.update()
+            return
+        testo = self._view._txtIn.value
+        lingua = self._view._language_selector.value
+        if lingua is None:
+            self._view._txtOut.controls.append(ft.Text(value="Non hai inserito alcuna lingua", color="red"))
+            self._view.page.update()
+            return
+        modalita = self._view._select_modality.value
+        if modalita is None:
+            self._view._txtOut.controls.append(ft.Text(value="Non hai inserito alcuna modalità", color="red"))
+            self._view.page.update()
+            return
+        self._view._txtOut.controls.append(ft.Text(value=f"Frase inserita: {testo}", color="green"))
+        self._view.page.update()
+        risultato = self.handleSentence(testo, lingua, modalita)
+        if risultato is not None:
+            paroleErrate, tempo = risultato
+            self._view._txtOut.controls.append(ft.Text(value=f"parole errate: {paroleErrate}", color="red"))
+            self._view._txtOut.controls.append(ft.Text(value=f"tempo richiesto alla ricerca: {tempo}", color="red"))
+            self._view.page.update()
+
+
+
     def handleSentence(self, txtIn, language, modality):
         txtIn = replaceChars(txtIn.lower())
-
         words = txtIn.split()
         paroleErrate = " - "
 
@@ -44,7 +70,6 @@ class SpellChecker:
             case _:
                 return None
 
-
     def printMenu(self):
         print("______________________________\n" +
               "      SpellChecker 101\n"+
@@ -62,3 +87,5 @@ def replaceChars(text):
     for c in chars:
         text = text.replace(c, "")
     return text
+
+
